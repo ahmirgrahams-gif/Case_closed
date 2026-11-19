@@ -43,7 +43,6 @@ function createMainWindow(){
   mainWindow.webContents.setWindowOpenHandler(()=>({action:"deny"}));
   mainWindow.webContents.on("will-navigate",event=>event.preventDefault());
   mainWindow.on("closed",()=>{mainWindow=null;});
-  mainWindow.loadFile(path.join(__dirname,"..","index.html"));
   return mainWindow;
 }
 
@@ -72,6 +71,7 @@ async function launchWithIntro(){
     main.webContents.once("did-finish-load",()=>resolve(true));
     main.webContents.once("did-fail-load",()=>resolve(false));
   });
+  main.loadFile(path.join(__dirname,"..","index.html"));
   // Don't leave an uncloseable splash window if loading fails.
   const [loaded]=await Promise.all([ready,minimum]);
   if(splash&&!splash.isDestroyed())splash.close();
