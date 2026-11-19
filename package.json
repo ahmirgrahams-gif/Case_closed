@@ -1,0 +1,36 @@
+{
+  "name": "case-closed-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Case Closed AI detective-themed troubleshooting prototype",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "^33.4.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "ai.caseclosed.review",
+    "productName": "Case Closed AI",
+    "files": [
+      "index.html",
+      "desktop/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "artifactName": "CaseClosedAI-${version}-Setup.${ext}"
+  }
+}
