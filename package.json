@@ -1,12 +1,13 @@
 {
   "name": "case-closed-ai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Case Closed AI detective-themed troubleshooting prototype",
+  "description": "Case Closed AI Windows desktop device diagnostics with detective-style guided investigations",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "electron .",
-    "build:win": "electron-builder --win nsis --x64"
+    "build:win": "electron-builder --win nsis --x64 --publish never",
+    "test": "node --test test/*.test.cjs"
   },
   "devDependencies": {
     "electron": "^33.4.0",
@@ -31,6 +32,8 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true
     },
-    "artifactName": "CaseClosedAI-${version}-Setup.${ext}"
-  }
+    "artifactName": "CaseClosedAI-${version}-Setup.${ext}",
+    "publish": null
+  },
+  "author": "Case Closed AI contributors"
 }
