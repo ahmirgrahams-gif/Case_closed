@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['index.html', 'package.json', 'desktop/**', '.github/workflows/windows-review.yml']
+    paths: ['index.html', 'package.json', 'desktop/**', 'assets/**', 'scripts/**', 'test/**', '.github/workflows/windows-review.yml']
 permissions:
   contents: read
 jobs:
@@ -16,6 +16,7 @@ jobs:
           node-version: '22'
       - run: npm install --no-audit --no-fund
       - run: npm test
+      - run: npm run icons
       - run: npm run build:win
       - uses: actions/upload-artifact@v4
         with:
