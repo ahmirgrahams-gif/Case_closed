@@ -20,9 +20,9 @@ jobs:
           const fs = require('node:fs');
           const vm = require('node:vm');
           const html = fs.readFileSync('index.html','utf8');
-          const scripts = [...html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g)];
-          if (!scripts.length) throw new Error('No inline app JavaScript');
-          for(const [i,script] of scripts.entries()) new vm.Script(script[1],{filename:'index-inline-'+i+'.js'});
+          const script = html.split('<script>')[1]?.split('</script>')[0];
+          if (!script) throw new Error('No inline JavaScript');
+          new vm.Script(script,{filename:'index-inline.js'});
           for(const label of ['OPENING CASE FILE','EVIDENCE BOARD','Casebook']) if(!html.includes(label)) throw new Error('Missing '+label);
           console.log('JavaScript syntax and required UI content passed');
           NODE
