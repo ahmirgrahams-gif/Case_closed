@@ -19,8 +19,8 @@ const scenarios={
 function save(){localStorage.setItem(storeKey,JSON.stringify(cases))}
 function html(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function navigate(r){route=r;render()}
-function renderNav(){nav.innerHTML=[["home","⌂  Home"],["new","⌕  Open a case"],["scan","▤  Device scan"],["smart","◈  AI investigation"],["cases","▱  Casebook"],["about","ⓘ  About"]].map(([r,t])=>'<button data-route="'+r+'" class="'+(r===route?'active':'')+'">'+t+'</button>').join("");nav.querySelectorAll("button").forEach(b=>b.onclick=()=>navigate(b.dataset.route))}
-function render(){renderNav();if(route==="smart"){renderSmart();return;}if(route==="scan"){renderScan();return;}if(route==="home"){app.innerHTML='<section class="hero"><div class="hero-copy"><span class="micro eyebrow">CASE CLOSED AI / INVESTIGATION DESK</span><h1>Don’t guess.<br>Investigate.</h1><p>A simple way to work through technology problems. Collect clues, follow safe steps, and close the case when the fix works.</p><div class="actions"><button class="btn" id="open">Open an investigation →</button><button class="btn secondary" id="devicecheck">Scan this device</button><button class="btn secondary" id="smart-home">AI investigation</button><button class="btn secondary" id="casebook">View casebook</button></div></div><div class="folder-art"><div class="tab"></div><div class="body"></div><div class="stamp">CASE FILE</div></div></section><h3 class="section-head">YOUR INVESTIGATION PROCESS</h3><section class="cards"><article class="card"><span class="tag">01 / IDENTIFY</span><h3>Report the issue</h3><p>Tell the app what you are experiencing.</p></article><article class="card"><span class="tag">02 / INVESTIGATE</span><h3>Collect clues</h3><p>Answer a few focused questions.</p></article><article class="card"><span class="tag">03 / VERIFY</span><h3>Confirm the fix</h3><p>Try the suggested steps and record the outcome.</p></article></section><div class="footer">REVIEW PROTOTYPE · Native device diagnostics available in the desktop installer · no automatic repairs</div>';document.querySelector("#open").onclick=()=>navigate("new");document.querySelector("#devicecheck").onclick=()=>navigate("scan");document.querySelector("#smart-home").onclick=()=>navigate("smart");document.querySelector("#casebook").onclick=()=>navigate("cases")}
+function renderNav(){nav.innerHTML=[["home","⌂  Home"],["new","⌕  Open a case"],["scan","▤  Device scan"],["smart","◈  AI investigation"],["alerts","⚑  Alerts & files"],["updates","◷  Update log"],["cases","▱  Casebook"],["about","ⓘ  About"]].map(([r,t])=>'<button data-route="'+r+'" class="'+(r===route?'active':'')+'">'+t+'</button>').join("");nav.querySelectorAll("button").forEach(b=>b.onclick=()=>navigate(b.dataset.route))}
+function render(){renderNav();if(route==="smart"){renderSmart();return;}if(route==="alerts"){renderAlerts();return;}if(route==="updates"){renderUpdates();return;}if(route==="scan"){renderScan();return;}if(route==="home"){app.innerHTML='<section class="hero"><div class="hero-copy"><span class="micro eyebrow">CASE CLOSED AI / INVESTIGATION DESK</span><h1>Don’t guess.<br>Investigate.</h1><p>A simple way to work through technology problems. Collect clues, follow safe steps, and close the case when the fix works.</p><div class="actions"><button class="btn" id="open">Open an investigation →</button><button class="btn secondary" id="devicecheck">Scan this device</button><button class="btn secondary" id="smart-home">AI investigation</button><button class="btn secondary" id="casebook">View casebook</button></div></div><div class="folder-art"><div class="tab"></div><div class="body"></div><div class="stamp">CASE FILE</div></div></section><h3 class="section-head">YOUR INVESTIGATION PROCESS</h3><section class="cards"><article class="card"><span class="tag">01 / IDENTIFY</span><h3>Report the issue</h3><p>Tell the app what you are experiencing.</p></article><article class="card"><span class="tag">02 / INVESTIGATE</span><h3>Collect clues</h3><p>Answer a few focused questions.</p></article><article class="card"><span class="tag">03 / VERIFY</span><h3>Confirm the fix</h3><p>Try the suggested steps and record the outcome.</p></article></section><div class="footer">REVIEW PROTOTYPE · Native device diagnostics available in the desktop installer · no automatic repairs</div>';document.querySelector("#open").onclick=()=>navigate("new");document.querySelector("#devicecheck").onclick=()=>navigate("scan");document.querySelector("#smart-home").onclick=()=>navigate("smart");document.querySelector("#casebook").onclick=()=>navigate("cases")}
 else if(route==="new"){app.innerHTML='<span class="micro">NEW CASE / INTAKE</span><h1>What went wrong?</h1><p>Choose a category and describe your issue. We will investigate one clue at a time.</p><div class="panel"><h3>Problem category</h3><div class="categories" id="cats"></div><h3>Describe the problem</h3><textarea id="report" class="field" maxlength="1000" placeholder="Example: My Wi-Fi keeps disconnecting every few minutes."></textarea><button id="start" class="btn">Open case file →</button></div>';document.querySelector("#cats").innerHTML=Object.keys(scenarios).map(x=>'<button class="chip '+(x===category?'on':'')+'" data-category="'+x+'">'+x+'</button>').join("");document.querySelectorAll("[data-category]").forEach(b=>b.onclick=()=>{report=document.querySelector("#report").value;category=b.dataset.category;render();document.querySelector("#report").value=report});document.querySelector("#report").value=report;document.querySelector("#smart-open").onclick=()=>{smartCategory=category;smartReport=document.querySelector("#report").value.trim();smartAnswers=[];smartLatest=null;smartError="";smartStatusKnown=false;smartEvidence=[];navigate("smart")};document.querySelector("#start").onclick=()=>{report=document.querySelector("#report").value.trim()||"Help troubleshoot my "+category+" issue";active={id:Date.now(),category,report,created:new Date().toLocaleString(),status:"Open",findings:[]};cases.unshift(active);save();stage="question";questionIndex=0;findings=[];intro.classList.remove("hidden");const timer=setTimeout(()=>{intro.classList.add("hidden");route="investigate";render()},2300);document.querySelector("#skip").onclick=()=>{clearTimeout(timer);intro.classList.add("hidden");route="investigate";render()}}}
 else if(route==="investigate"){if(!active){navigate("cases");return}const sc=scenarios[active.category];const board='<div class="board"><svg class="thread" viewBox="0 0 500 300" preserveAspectRatio="none"><line x1="110" y1="86" x2="364" y2="90"/><line x1="125" y1="86" x2="350" y2="236"/></svg><div class="pins"><div class="note"><span class="pin"></span><b>CASE REPORT</b><small>'+html(active.report.slice(0,100))+'</small></div>'+findings.map((f,i)=>'<div class="note" style="animation-delay:'+i*.15+'s"><span class="pin"></span><b>CLUE 0'+(i+1)+'</b><small>'+html(f)+'</small></div>').join('')+'</div></div>';app.innerHTML='<div class="topline"><span class="micro">ACTIVE INVESTIGATION / #'+String(active.id).slice(-5)+'</span><span class="status">'+active.status+'</span></div><h1>'+html(active.category)+' investigation</h1><p>'+html(active.report)+'</p><div class="layout2"><div><h3 class="section-head">EVIDENCE BOARD</h3>'+board+'</div><section><h3 class="section-head">DETECTIVE\'S NOTEBOOK</h3><div class="panel" id="notebook"></div></section></div><div class="footer">Visual clues are user-reported evidence, not verified system measurements.</div>';const nb=document.querySelector("#notebook");if(stage==="question"){const q=sc.q[questionIndex];nb.innerHTML='<span class="tag">QUESTION '+(questionIndex+1)+' / '+sc.q.length+'</span><h2>'+html(q.text)+'</h2><p class="small">Pick the best answer to narrow the investigation.</p>'+q.options.map((o,i)=>'<button class="choice" data-answer="'+i+'">'+html(o)+'</button>').join('');nb.querySelectorAll("[data-answer]").forEach(b=>b.onclick=()=>{findings.push(q.text+" — "+q.options[Number(b.dataset.answer)]);active.findings=[...findings];save();questionIndex++;if(questionIndex>=sc.q.length)stage="solution";render()})}else if(stage==="solution"){nb.innerHTML='<span class="tag">ACTION PLAN / GUIDED DEMO</span><h2>Recommended checks</h2><p class="small">These are general, low-risk suggestions—not a confirmed diagnosis or automated repair.</p><ol class="steps">'+sc.steps.map(s=>'<li>'+html(s)+'</li>').join('')+'</ol><button class="btn" id="works">The issue is fixed</button><button class="choice" id="notyet">Still happening</button>';document.querySelector("#works").onclick=()=>{active.status="Resolved by user";save();stage="closed";render()};document.querySelector("#notyet").onclick=()=>{active.status="Still open";save();stage="open";render()}}else if(stage==="closed"){nb.innerHTML='<div class="closed-stamp">CASE CLOSED</div><h2>User confirmed resolution</h2><p>This case was closed by your confirmation; no independent re-test was performed.</p><button class="btn secondary" id="archive">View casebook</button>';document.querySelector("#archive").onclick=()=>navigate("cases")}else{nb.innerHTML='<span class="status">STILL OPEN</span><h2>Investigation continues</h2><p>Document the result, try a trusted support resource, or contact a qualified technician if the problem persists.</p><button class="btn secondary" id="archive">View casebook</button>';document.querySelector("#archive").onclick=()=>navigate("cases")}}
 else if(route==="cases"){app.innerHTML='<span class="micro">ARCHIVE / LOCAL CASEBOOK</span><h1>Casebook</h1><p>Review your reports and recorded answers. Cases are saved in this browser profile only.</p>'+(cases.length?'<div class="cards">'+cases.map(c=>'<article class="card"><div class="topline"><span class="tag">#'+String(c.id).slice(-5)+'</span><span class="status '+(c.status.startsWith("Resolved")?"done":"")+'">'+html(c.status)+'</span></div><h3>'+html(c.category)+'</h3><p>'+html(c.report.slice(0,130))+'</p>'+(c.aiSummary?'<p style="margin-top:8px;color:#e2cfb9">'+html(c.aiSummary.slice(0,240))+'</p>':'')+'<p class="small">'+html(c.created)+'</p></article>').join('')+'</div>':'<div class="panel empty">No cases yet. Open an investigation to create one.</div>')+'<div class="actions"><button id="newcase" class="btn">Open a case</button><button id="clear" class="btn secondary">Delete local case history</button></div>';document.querySelector("#newcase").onclick=()=>navigate("new");document.querySelector("#clear").onclick=()=>{if(confirm("Permanently delete case history saved in this browser?")){cases.length=0;save();render()}}}
@@ -178,6 +178,117 @@ async function smartAsk(){
     smartLatest=r;
   }catch(e){smartError="Investigation failed: "+(e?.message||"Please retry.");}
   finally{smartBusy=false;renderSmart();}
+}
+
+
+let alertState=null,alertError="",alertLoading=false,inspectedFile=null,fileMessage="";
+function renderUpdates(){
+  const entries=[
+    {version:"0.4.0",date:"November 19, 2026",items:[
+      "Added background device checks every 15 minutes while the desktop application runs in the Windows tray.",
+      "Added a walking case-file character that can alert from the bottom-right corner when a new finding needs review.",
+      "Added a device Alerts panel, Microsoft Defender detection history, and file explanation tools.",
+      "Added approval-based Move to Recycle Bin for user-selected ordinary files, with protected locations blocked.",
+      "Added optional Windows sign-in launch settings and clear controls to pause monitoring or alerts."
+    ]},
+    {version:"0.3.0",date:"November 19, 2026",items:[
+      "Added the cinematic folder-and-magnifying-glass opening animation.",
+      "Added branded Windows installer and desktop/Start menu shortcuts.",
+      "Added optional AI investigations using your issue description and labeled OS evidence.",
+      "Added saved AI investigation summaries to the casebook."
+    ]},
+    {version:"0.2.0",date:"November 19, 2026",items:[
+      "Added CPU, memory, storage, firewall and antivirus status diagnostics.",
+      "Added optional DNS/HTTPS tests and user-approved Microsoft Defender Quick Scan.",
+      "Connected measurements to the animated evidence board."
+    ]},
+    {version:"0.1.0",date:"November 19, 2026",items:[
+      "Created the desktop review app with case folders, guided investigations, red-thread evidence board and casebook."
+    ]}
+  ];
+  app.innerHTML='<span class="micro">CASE CLOSED AI / RELEASE NOTES</span><h1>Update log.</h1>'+
+    '<p>Every investigation tool needs a clear record of what changed. This log covers features added to Case Closed AI. It is not a live Windows Update history.</p>'+
+    entries.map((x,i)=>'<section class="panel"><div class="topline"><h2>Version '+html(x.version)+(i===0?' · Current':'')+'</h2><span class="tag">'+html(x.date)+'</span></div><ul class="steps">'+x.items.map(y=>'<li>'+html(y)+'</li>').join('')+'</ul></section>').join('');
+}
+function renderAlerts(){
+  const native=!!window.caseClosedDevice,settings=alertState;
+  app.innerHTML='<span class="micro">CASE CLOSED AI / DEVICE WATCH</span><h1>Device alerts.</h1>'+
+    '<p>Know what needs attention and why. Findings come from Windows or local measurements, not filename guesses. Closing the main window leaves the app in the tray while monitoring is enabled; choosing Quit stops it.</p>'+
+    (!native?'<div class="panel"><h2>Windows app required</h2><p>The browser demo cannot monitor your device or remove files.</p></div>':
+    '<section class="panel"><div class="topline"><h2>Background monitoring</h2><span class="status '+(settings?.background?'done':'')+'">'+(settings?.background?'Enabled':'Off')+'</span></div>'+
+      '<p class="small">Local checks run about every 15 minutes. External network tests are not used in the background. Only new findings trigger alerts. Disable alerts or monitoring whenever you want.</p>'+
+      '<label class="choice"><input type="checkbox" id="alert-toggle-monitor" '+(settings?.background?'checked':'')+'> Keep checking when the main window is closed to the system tray</label>'+
+      '<label class="choice"><input type="checkbox" id="alert-toggle-notifications" '+(settings?.notifications?'checked':'')+'> Display desktop notifications and the walking file character</label>'+
+      '<label class="choice"><input type="checkbox" id="alert-toggle-startup" '+(settings?.autoStart?'checked':'')+' '+(!settings?.startupSupported?'disabled':'')+'> Start in the tray when signing in to Windows</label>'+
+      '<div class="actions"><button class="btn secondary" id="alert-save" '+(alertLoading?'disabled':'')+'>Save settings</button><button class="btn" id="alert-refresh" '+(alertLoading?'disabled':'')+'>Check now</button></div>'+
+      '<p class="small">Last local check: '+(settings?.monitor?.checkedAt?html(new Date(settings.monitor.checkedAt).toLocaleString()):'Not completed yet')+'</p></section>')+
+    (alertError?'<div role="alert" class="panel" style="color:#e4a09c">'+html(alertError)+'</div>':'')+
+    '<section class="panel"><h2>Findings that need attention</h2>'+
+      (settings?.monitor?.issues?.length?
+       '<div class="cards">'+settings.monitor.issues.map(x=>'<div class="card"><div class="tag">'+html(x.source)+'</div><h3>'+html(x.title)+'</h3><p>'+html(x.summary)+'</p><p class="small">'+html(x.detail||'')+'</p><p class="small">Severity: review needed, not proof of malicious activity.</p></div>').join('')+'</div>':
+       '<p>No current findings recorded by the background checker. This does not guarantee a clean or problem-free computer.</p>')+
+    '</section>'+
+    '<section class="panel"><h2>Microsoft Defender detection history</h2><p>Windows Security is the trusted source of malware detections. A history item may already have been remediated; do not assume it is an active infection.</p>'+
+      (settings?.monitor?.history?.available?
+        (settings.monitor.history.detections.length?
+         '<div class="cards">'+settings.monitor.history.detections.slice(0,12).map(x=>
+           '<div class="card"><div class="tag">DEFENDER DETECTION · '+html(x.detectedAt?.slice(0,10)||'date unavailable')+'</div><h3>Threat ID: '+html(x.threatId)+'</h3><p>Defender remediation action: '+(x.actionSuccess?'reported successful':'not confirmed successful')+'</p><p class="small">'+x.resources.map(z=>html(z)).join(' · ')+'</p></div>').join('')+'</div>':
+        '<p>No entries returned by Defender detection history.</p>'):
+       '<p>History not available yet, or another antivirus provider manages this computer.</p>')+
+    '</section>'+
+    (native?'<section class="panel"><h2>Inspect a suspicious file</h2><p>Choose a specific file to see its name, type, size, SHA-256 hash and why it merits review. An executable filename alone is not proof of malware.</p>'+
+      '<button class="btn secondary" id="file-inspect">Choose a file to inspect</button>'+
+      (inspectedFile?'<div class="card" style="margin-top:18px"><div class="tag">LOCAL FILE · USER SELECTED</div><h3>'+html(inspectedFile.name)+'</h3>'+
+        '<p class="small">'+html(inspectedFile.path)+'</p>'+
+        '<p class="small">SHA-256: '+html(inspectedFile.sha256||'Not hashed (over size limit)')+'</p>'+
+        '<p><b>Why it was flagged for review:</b></p><ul class="steps">'+inspectedFile.reasons.map(x=>'<li>'+html(x)+'</li>').join('')+'</ul>'+
+        '<p class="small">Classification: '+html(inspectedFile.classification)+'</p>'+
+        '<button class="btn" id="file-recycle" '+(!inspectedFile.canRecycle?'disabled':'')+'>Move selected file to Recycle Bin (confirm first)</button>'+
+        '<p class="small">This is a reversible user action, not permanent deletion or an automatic malware decision. Protected system locations cannot be removed here.</p></div>':'')+
+      (fileMessage?'<p role="status">'+html(fileMessage)+'</p>':'')+
+      '</section>':'')+
+    '<div class="footer">NO AUTO-DELETION · USER APPROVAL REQUIRED · PROTECTED FILES BLOCKED · QUIT FROM TRAY TO STOP THE APP</div>';
+  if(!native)return;
+  if(!settings&&!alertLoading){alertLoading=true;window.caseClosedDevice.monitorStatus().then(data=>{alertState=data;alertError='';}).catch(e=>{alertError=e.message||'Could not load alert status.';}).finally(()=>{alertLoading=false;renderAlerts();});return;}
+  const save=document.getElementById("alert-save");
+  if(save)save.onclick=async()=>{
+    alertLoading=true;
+    const values={
+      background:document.getElementById("alert-toggle-monitor").checked,
+      notifications:document.getElementById("alert-toggle-notifications").checked,
+      autoStart:document.getElementById("alert-toggle-startup").checked
+    };
+    try{alertState=await window.caseClosedDevice.monitorSettings(values);alertError='';}
+    catch(e){alertError=e.message||'Could not save settings.';}
+    finally{alertLoading=false;renderAlerts();}
+  };
+  const refresh=document.getElementById("alert-refresh");
+  if(refresh)refresh.onclick=async()=>{
+    alertLoading=true;renderAlerts();
+    try{alertState=await window.caseClosedDevice.monitorNow();alertError='';}
+    catch(e){alertError=e.message||'Check failed.';}
+    finally{alertLoading=false;renderAlerts();}
+  };
+  const inspect=document.getElementById("file-inspect");
+  if(inspect)inspect.onclick=async()=>{
+    try{inspectedFile=await window.caseClosedDevice.inspectFile();fileMessage='';}
+    catch(e){fileMessage='Inspection failed: '+(e.message||'unknown error');}
+    renderAlerts();
+  };
+  const recycle=document.getElementById("file-recycle");
+  if(recycle)recycle.onclick=async()=>{
+    try{
+      const result=await window.caseClosedDevice.recycleFile();
+      if(result.moved){inspectedFile=null;fileMessage=result.message;}
+      else{fileMessage='No change was made.';}
+    }catch(e){fileMessage='Could not move file: '+(e.message||'unknown error');}
+    renderAlerts();
+  };
+}
+if(window.caseClosedDevice?.onShowPage){
+  window.caseClosedDevice.onShowPage(page=>{
+    if(["home","scan","alerts","cases","updates","smart"].includes(page)){route=page;render();}
+  });
 }
 
 render();
