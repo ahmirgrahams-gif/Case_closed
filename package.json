@@ -22,9 +22,7 @@
       "index.html",
       "desktop/**/*",
       "assets/**/*",
-      "package.json",
-      "!assets/*.ico",
-      "!assets/*.png"
+      "package.json"
     ],
     "directories": {
       "output": "dist"
@@ -44,14 +42,7 @@
       "uninstallerIcon": "assets/case-closed.ico"
     },
     "artifactName": "CaseClosedAI-${version}-Setup.${ext}",
-    "publish": null,
-    "extraResources": [
-      {
-        "from": "assets/case-closed.ico",
-        "to": "case-closed.ico"
-      }
-    ],
-    "extraMetadata": {}
+    "publish": null
   },
   "author": "Case Closed AI contributors"
 }
