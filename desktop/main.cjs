@@ -146,7 +146,7 @@ ipcMain.handle("caseclosed:file-inspect",async event=>{
 });
 ipcMain.handle("caseclosed:file-recycle",event=>fileReview.recycleSelected(BrowserWindow.fromWebContents(event.sender)));
 ipcMain.handle("caseclosed:monitor-status",()=>getSettings());
-ipcMain.handle("caseclosed:monitor-now",async()=>{await monitor?.checkNow();return getSettings();});
+ipcMain.handle("caseclosed:monitor-now",async()=>{await monitor?.checkNow(true);return getSettings();});
 ipcMain.handle("caseclosed:monitor-settings",async(_event,values)=>{
   const v=values||{};
   if(typeof v.background==="boolean")settings.background=v.background;
