@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+<title id="title">Case Closed AI magnifying glass and folder</title>
+<rect width="512" height="512" rx="104" fill="#12161c"/>
+<path d="M73 137c0-13 11-24 24-24h119l39 42h160c13 0 24 11 24 24v204H73z" fill="#c29968"/>
+<path d="M73 183h366v207c0 13-11 24-24 24H97c-13 0-24-11-24-24z" fill="#ad8052"/>
+<path d="M73 217h366v26H73z" fill="#d6ae79" opacity=".38"/>
+<circle cx="240" cy="285" r="108" fill="#161b20" stroke="#bd4149" stroke-width="41"/>
+<circle cx="240" cy="285" r="66" fill="#20262c"/>
+<path d="M320 368l109 105" fill="none" stroke="#bd4149" stroke-width="39" stroke-linecap="round"/>
+<path d="M205 246c17-19 39-28 64-26" fill="none" stroke="#f3dfc3" stroke-width="12" opacity=".25" stroke-linecap="round"/>
+</svg>
