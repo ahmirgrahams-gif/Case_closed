@@ -1,39 +1,57 @@
 {
   "name": "case-closed-ai",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "Case Closed AI Windows desktop device diagnostics with detective-style guided investigations",
+  "description": "Case Closed AI branded Windows desktop investigator with real device diagnostics",
   "main": "desktop/main.cjs",
   "scripts": {
     "start": "electron .",
-    "build:win": "electron-builder --win nsis --x64 --publish never",
-    "test": "node --test test/*.test.cjs"
+    "build:win": "npm run icons && electron-builder --win nsis --x64 --publish never",
+    "test": "node --test test/*.test.cjs",
+    "icons": "node scripts/generate-icon.cjs"
   },
   "devDependencies": {
     "electron": "^33.4.0",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "sharp": "^0.33.5"
   },
   "build": {
-    "appId": "ai.caseclosed.review",
+    "appId": "ai.caseclosed.desktop",
     "productName": "Case Closed AI",
     "files": [
       "index.html",
       "desktop/**/*",
-      "package.json"
+      "assets/**/*",
+      "package.json",
+      "!assets/*.ico",
+      "!assets/*.png"
     ],
     "directories": {
       "output": "dist"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "assets/case-closed.ico"
     },
     "nsis": {
       "oneClick": false,
       "perMachine": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Case Closed AI",
+      "installerIcon": "assets/case-closed.ico",
+      "uninstallerIcon": "assets/case-closed.ico"
     },
     "artifactName": "CaseClosedAI-${version}-Setup.${ext}",
-    "publish": null
+    "publish": null,
+    "extraResources": [
+      {
+        "from": "assets/case-closed.ico",
+        "to": "case-closed.ico"
+      }
+    ],
+    "extraMetadata": {}
   },
   "author": "Case Closed AI contributors"
 }
