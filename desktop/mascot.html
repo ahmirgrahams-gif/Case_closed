@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; object-src 'none'">
+<title>Case Closed AI notification</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;color:#f6ede6;background:transparent;overflow:hidden}
+.panel{display:flex;gap:12px;align-items:center;width:100%;height:100%;border:1px solid #745154;border-radius:14px;background:linear-gradient(145deg,#292326,#15181d);box-shadow:0 12px 35px #0009;padding:14px;animation:enter .5s cubic-bezier(.2,.75,.2,1) both}
+.mascot{flex:0 0 83px;height:107px;position:relative;animation:bob 1.1s ease-in-out infinite}
+.head{position:absolute;top:3px;left:13px;width:68px;height:77px;border:2px solid #9b754c;border-radius:8px;background:linear-gradient(145deg,#e0b98b,#bb8756);transform:rotate(-5deg);box-shadow:0 5px 8px #0005}
+.head:before{content:"";position:absolute;width:34px;height:13px;top:-12px;left:-2px;background:#c49561;border-radius:6px 6px 0 0}
+.eyes{position:absolute;left:17px;top:28px;font-size:20px;color:#302329;letter-spacing:7px;font-weight:900}.mouth{position:absolute;left:25px;top:58px;height:3px;width:16px;background:#693d35;border-radius:50%}
+.badge{position:absolute;right:-9px;top:10px;border:2px solid #f0b9aa;background:#bd3541;color:white;font-weight:900;border-radius:50%;padding:5px 9px;animation:pulse 2s infinite}
+.leg{position:absolute;top:79px;width:4px;height:23px;background:#bc8a64;transform-origin:top}.leg.l{left:32px;animation:walk .45s alternate infinite}.leg.r{left:60px;animation:walk .45s alternate-reverse infinite}
+.leg:after{content:"";position:absolute;bottom:0;left:-8px;width:15px;height:6px;background:#b74a49;border-radius:4px}
+.bodycopy{min-width:0;flex:1}.kicker{font:10px Consolas,monospace;letter-spacing:.11em;color:#dfb286}.headline{font-size:16px;font-weight:800;margin:7px 0}.detail{font-size:12px;line-height:1.4;color:#b8aeb0;max-height:40px;overflow:hidden;margin:0 0 10px}
+button{font:600 12px Segoe UI,Arial,sans-serif;border-radius:6px;padding:7px 10px;cursor:pointer}
+#review{background:#b63e46;border:1px solid #c94e56;color:#fff}#dismiss{background:none;border:1px solid #494246;color:#b7abad;margin-left:5px}
+@keyframes enter{from{transform:translateX(105%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes bob{50%{transform:translateY(-5px)}}
+@keyframes walk{to{transform:rotate(22deg)}}@keyframes pulse{50%{box-shadow:0 0 0 7px #b83b451d}}
+@media(prefers-reduced-motion:reduce){*,*:before{animation:none!important}}
+</style></head><body>
+<article class="panel" role="alert"><div class="mascot" aria-hidden="true"><div class="head"><span class="eyes">• •</span><span class="mouth"></span></div><div class="badge">!</div><i class="leg l"></i><i class="leg r"></i></div>
+<div class="bodycopy"><div class="kicker">CASE CLOSED AI · ALERT</div><div id="title" class="headline">A clue needs your attention.</div><p id="detail" class="detail">A new device finding is ready to review.</p><button id="review">Review findings</button><button id="dismiss">Not now</button></div></article>
+<script src="mascot.js"></script></body></html>
