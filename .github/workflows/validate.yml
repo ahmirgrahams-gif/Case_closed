@@ -1,0 +1,30 @@
+name: Validate Case Closed AI
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['index.html', 'desktop/**', 'package.json', '.github/workflows/validate.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify embedded application JavaScript parses
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const html = fs.readFileSync('index.html','utf8');
+          const scripts = [...html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g)];
+          if (!scripts.length) throw new Error('No inline app JavaScript');
+          for(const [i,script] of scripts.entries()) new vm.Script(script[1],{filename:'index-inline-'+i+'.js'});
+          for(const label of ['OPENING CASE FILE','EVIDENCE BOARD','Casebook']) if(!html.includes(label)) throw new Error('Missing '+label);
+          console.log('JavaScript syntax and required UI content passed');
+          NODE
+      - name: Verify Electron launcher syntax
+        run: node --check desktop/main.cjs
