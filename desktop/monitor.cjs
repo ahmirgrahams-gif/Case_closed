@@ -19,8 +19,8 @@ function pickAttention(scan,history){
 }
 function createMonitor({onFindings,onError,intervalMs=INTERVAL}){
   let timer=null,running=false,enabled=false,previous=new Set(),initialized=false,latest=null,lastScan=null;
-  async function checkNow(){
-    if(running||!enabled)return latest;
+  async function checkNow(force=false){
+    if(running||(!enabled&&!force))return latest;
     running=true;
     try{
       const [scan,history]=await Promise.all([
