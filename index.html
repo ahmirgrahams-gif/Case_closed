@@ -97,7 +97,7 @@ function smartDetail(){
     ((data.hypotheses||[]).length?'<h3>Possible causes — not confirmed diagnoses</h3><div class="cards">'+statuses+'</div>':'')+
     (action?'<h3>Suggested checks</h3><ol class="steps">'+action+'</ol>':'')+
     (tests?'<h3>How to verify the original problem</h3><ol class="steps">'+tests+'</ol>':'')+
-    '<p class="small">AI suggestions can be wrong. You control all actions; no automatic repairs are performed.</p></section>';
+    '<p class="small">AI suggestions can be wrong. You control all actions; no automatic repairs are performed.</p><button class="btn secondary" id="smart-save">Save investigation to casebook</button></section>';
 }
 function renderSmart(){
   const native=!!window.caseClosedDevice;
@@ -113,6 +113,19 @@ function renderSmart(){
   (smartLatest?smartDetail():'')+
   (smartLatest?.question?'<section class="panel"><span class="micro">NEXT INVESTIGATIVE QUESTION</span><h2>'+html(smartLatest.question)+'</h2><p class="small">Answer the question; your answer will be used for the next investigation step.</p>'+smartLatest.options.map((x,i)=>'<button class="choice" data-smart-answer="'+i+'">'+html(x)+'</button>').join('')+'<textarea class="field" id="smart-other" maxlength="300" placeholder="Or describe another answer…"></textarea><button class="btn secondary" id="smart-other-go">Submit my answer →</button></section>':'')+
   '<div class="footer">AI-assisted analysis, not autonomous repair · Device measurements are labeled by source · No API key is saved</div>';
+  const saveCase=document.getElementById("smart-save");
+  if(saveCase)saveCase.onclick=()=>{
+    const item={
+      id:Date.now(),category:smartCategory,report:smartReport,
+      created:new Date().toLocaleString(),status:"Investigated · not verified",
+      findings:smartAnswers.map(x=>x.question+" — "+x.answer),
+      aiSummary:smartLatest.summary,
+      aiHypotheses:smartLatest.hypotheses,
+      verification:smartLatest.verification
+    };
+    cases.unshift(item);save();
+    saveCase.disabled=true;saveCase.textContent="Saved to casebook ✓";
+  };
   const report=document.getElementById("smart-report");
   report.value=smartReport;
   const c=document.getElementById("smart-category");
