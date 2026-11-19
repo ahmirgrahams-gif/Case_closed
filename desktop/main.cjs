@@ -65,7 +65,7 @@ function notifyFinding(items){
   const issue=security||items[0];
   alertFinding=issue;
   const title=security?"A security clue needs review":"Device issue needs your attention";
-  const detail=security?"Windows Security recorded a detection. Review the history before removing files.":issue.title+": "+issue.summary;
+  const detail=security?security.detail+" — "+security.summary:issue.title+": "+issue.summary;
   try{
     if(Notification.isSupported()){
       const n=new Notification({title:"Case Closed AI — "+title,body:detail.slice(0,220),silent:false});
