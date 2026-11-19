@@ -13,7 +13,7 @@ const SCRIPT=[
   "    if($_.InitialDetectionTime){$first=$_.InitialDetectionTime.ToString('o')}",
   "    if($_.LastThreatStatusChangeTime){$last=$_.LastThreatStatusChangeTime.ToString('o')}",
   "    @{ ThreatID=[string]$_.ThreatID; InitialDetectionTime=$first;",
-  "       LastThreatStatusChangeTime=$last;"
+  "       LastThreatStatusChangeTime=$last;",
   "       ActionSuccess=[bool]$_.ActionSuccess; Resources=$resources; ThreatStatusID=[string]$_.ThreatStatusID }",
   "  })",
   "} catch {",
