@@ -12,9 +12,16 @@ function pickAttention(scan,history){
     .map(c=>({id:c.id,title:c.title,summary:c.summary,source:c.source,detail:c.evidence||"",filePath:null,severity:"review"}));
   // Defender detections are history, not active malware classification.
   const detections=(history?.detections||[]).filter(x=>x.actionSuccess!==true)
-    .map(x=>({id:"defender-"+x.threatId+"-"+x.detectedAt,title:"Microsoft Defender detection",
-      summary:"Windows Security recorded a detection without a confirmed successful action. Review it.",
-      detail:x.resources.join(" | ").slice(0,1000),source:"Get-MpThreatDetection",filePath:null,severity:"security"}));
+    .map(x=>{
+      const refs=(x.resources||[]).map(String);
+      const fileRef=refs.find(y=>/^file:/i.test(y))||null;
+      const description=fileRef?"Defender history references "+fileRef.slice(0,310):
+        "Defender history provided no specific file path.";
+      return {id:"defender-"+x.threatId+"-"+x.detectedAt,
+        title:"Defender detection · Threat "+String(x.threatId||"unknown").slice(0,35),
+        summary:"Windows Security recorded a detection without a confirmed successful remediation action. Review its current status.",
+        detail:description,source:"Get-MpThreatDetection",filePath:fileRef,severity:"security"};
+    });
   return [...health,...detections];
 }
 function createMonitor({onFindings,onError,intervalMs=INTERVAL}){
