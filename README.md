@@ -1,68 +1,81 @@
-# Case Closed AI
+# Case Closed AI — Desktop Device Investigator
 
 **Don't guess. Investigate.**
 
-A minimal, detective-inspired troubleshooting prototype for technical review. The application presents a guided issue investigation with a case-file animation, pinned evidence notes, safe troubleshooting suggestions, and a local casebook.
+Case Closed AI is a real, installable Windows desktop application that combines **read-only native device diagnostics** with an animated detective-themed evidence board and guided troubleshooting.
 
-## Live browser demo
+## Download Windows installer
 
-GitHub Pages can host the self-contained `index.html` without any dependencies.
+1. Visit [Actions → Build Windows Review App](https://github.com/ahmirgrahams-gif/Case_closed/actions/workflows/windows-review.yml).
+2. Open the **latest successful** build.
+3. Under **Artifacts**, download **CaseClosedAI-Windows-review-unsigned**.
+4. Extract the artifact ZIP and run the `CaseClosedAI-0.2.0-Setup.exe` installer.
 
-1. Open **Settings → Pages** in this repository.
-2. Under **Build and deployment**, select **GitHub Actions**.
-3. Run **Deploy Case Closed AI Demo** from the **Actions** tab, if it has not started automatically.
-4. After a successful deployment, open: https://ahmirgrahams-gif.github.io/Case_closed/
+The installer is **unsigned**. Windows SmartScreen may warn because the publisher is not verified. Only run builds you trust. The workflow must succeed before an installer is available; a commit does **not** mean a build is ready.
 
-**GitHub Pages cannot inspect or repair your device.**
+## What the desktop application actually scans
 
-## Run as a desktop app
+| Check | Source | Meaning |
+| --- | --- | --- |
+| Available RAM | Native OS memory counters | Flags low available memory (under 10%) |
+| Short CPU sample | Native OS CPU counters | Flags very high utilization (90%+) |
+| Fixed drives | Windows CIM (Win32_LogicalDisk) | Flags low storage (under 10% free) |
+| Microsoft Defender status | Get-MpComputerStatus | Reports antivirus and real-time-protection status |
+| Firewall profiles | Get-NetFirewallProfile | Reports on/off state of Windows Firewall profiles |
+| Optional connectivity | DNS lookup + HTTPS request | Checks if selected endpoints can be reached |
 
-Requires a supported Node.js installation and internet access for the initial dependency download.
+**You control the scan.** Nothing runs continuously in the background. The optional network check contacts `example.com` and `www.microsoft.com` only when its checkbox is selected.
+
+**Microsoft Defender Quick Scan:** A separate confirmation button invokes Windows’ built-in `Start-MpScan -ScanType QuickScan` command. It requires Microsoft Defender to be enabled and may be blocked by organizational policy. Review progress and detections in Windows Security. **Case Closed AI is not its own antivirus engine and cannot promise a device is virus-free.**
+
+The app does **not** delete files, modify security settings, install drivers, change the registry, or perform automatic repairs.
+
+## How the investigation works
+
+1. Open **Device scan** in the installed desktop application.
+2. Click **Scan this device** and optionally allow external connectivity tests.
+3. Review the real measurements displayed as pinned clues on the animated evidence board.
+4. Select **Open case from finding** to carry an observed issue into guided troubleshooting.
+5. Follow suggested steps; any final resolution is marked as **user-confirmed**, not independently verified.
+
+Scan findings are transient in the interface unless you deliberately carry one into the casebook. Casebook records are kept locally on this device in app storage, unencrypted. Avoid entering passwords or personal secrets.
+
+## Browser demo
+
+The [web-only preview](https://ahmirgrahams-gif.github.io/Case_closed/) is a guided demonstration. Browsers cannot retrieve desktop OS diagnostic information here. The demo **does not fabricate scan data** and displays a desktop-required notice. The Pages deployment requires GitHub Pages to be enabled in repository Settings → Pages → GitHub Actions.
+
+## Developer setup
+
+Requires Node.js and npm on a desktop computer:
 
 ```bash
 npm install
+npm test
 npm start
 ```
 
-The Electron window loads the same offline-capable static UI. It does not access system information or run background scans.
-
-## Build a Windows installer
-
-On Windows:
+For a Windows installer:
 
 ```bash
-npm install
 npm run build:win
 ```
 
-Or open **Actions → Build Windows Review App → Run workflow**. If the workflow succeeds, the downloadable unsigned installer is available in its run **Artifacts**. The workflow is present but a successful Windows build has not been verified in this conversation.
+The workflow uses Windows runners and uploads a ZIP containing the unsigned installer. No GitHub Personal Access Token is required for the artifact.
 
-## What works
+## App architecture and safety
 
-- Animated brand splash, case-file opening, pinned evidence notes, connecting red threads, and a closing stamp.
-- Guided, rule-based questions and advice for Wi-Fi, Fiber, Computer, Phone, Printer, and Software.
-- Local case history, user-confirmed resolution, and simple casebook management.
+- `index.html` — investigation interface, animations, and casebook.
+- `desktop/main.cjs` — Electron main process; only an explicit small set of IPC commands is exposed.
+- `desktop/preload.cjs` — context-isolated API bridge.
+- `desktop/diagnostics.cjs` — OS measurements, platform checks, security status, user-approved Defender scan action.
+- `test/diagnostics.test.cjs` — logic tests for health findings and unavailable data.
+- `.github/workflows/windows-review.yml` — builds the installer.
+- `.github/workflows/validate.yml` — checks syntax and runs tests.
 
-## What isn't implemented
+Electron uses context isolation, sandboxing, disabled Node integration, and denies window navigation.
 
-- Live AI diagnosis or an integrated language model.
-- Reading system logs, scanning for viruses, automatic repairs, rollback, or verified proof-of-fix.
-- An actual connection to device hardware or operating-system diagnostics.
+### What still needs development
 
-Clues are **based on answers supplied by users**, not real system findings. Do not enter credentials or sensitive information: local case history is stored without encryption in browser/app storage.
+The current app **does not** include an AI model, autonomous malware signatures, system-log correlation, device-wide issue detection, automated repairs, rollback orchestration, ongoing monitoring, or measured post-repair verification. A one-time OS health scan is not a full forensic investigation. Mac/Linux builds are not yet supported as tested installers. Future versions should add richer Windows Event Log analysis, testable issue hypotheses, and explicit pre/post repair checks.
 
-## Design
-
-The interface intentionally favors an official dark desktop-tool appearance. Animations are restrained and tied to the investigation process. This repository contains a streamlined, independent review build rather than the complete asset-heavy earlier Windows shortcut ZIP.
-
-## Repository files
-
-- `index.html` — complete browser UI, CSS, and guided investigation logic.
-- `desktop/main.cjs` — minimal Electron desktop launcher.
-- `package.json` — start and Windows build commands.
-- `.github/workflows/pages.yml` — static GitHub Pages deployment workflow.
-- `.github/workflows/windows-review.yml` — Windows installer build and Actions artifact.
-
-## Next improvements
-
-Separate JS/CSS components, add validated device diagnostics with explicit permissions, evidence provenance, genuine post-fix testing, safe action approvals and rollback, automated tests, and installer code signing.
+**Design:** clean professional dark interface, restrained folder-opening animation, investigative red threads and pinned evidence, and a case stamp when the user confirms resolution.
