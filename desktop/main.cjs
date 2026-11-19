@@ -139,7 +139,11 @@ ipcMain.handle("caseclosed:defender",async()=>{
   finally{securityScan=false;}
 });
 ipcMain.handle("caseclosed:history",()=>defenderHistory());
-ipcMain.handle("caseclosed:file-inspect",event=>fileReview.inspectSelected(BrowserWindow.fromWebContents(event.sender)));
+ipcMain.handle("caseclosed:file-inspect",async event=>{
+  let resources=[];
+  try{const history=await defenderHistory();resources=history.detections.flatMap(d=>d.resources);}catch{}
+  return fileReview.inspectSelected(BrowserWindow.fromWebContents(event.sender),resources);
+});
 ipcMain.handle("caseclosed:file-recycle",event=>fileReview.recycleSelected(BrowserWindow.fromWebContents(event.sender)));
 ipcMain.handle("caseclosed:monitor-status",()=>getSettings());
 ipcMain.handle("caseclosed:monitor-now",async()=>{await monitor?.checkNow();return getSettings();});
