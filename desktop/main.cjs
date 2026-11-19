@@ -3,6 +3,7 @@ const { app, BrowserWindow, ipcMain, nativeImage }=require("electron");
 const path=require("node:path");
 const fs=require("node:fs");
 const diagnostics=require("./diagnostics.cjs");
+const investigator=require("./investigator.cjs");
 
 const APP_TITLE="Case Closed AI";
 const SPLASH_MINIMUM_MS=3600;
@@ -16,6 +17,9 @@ function iconPath(){
   return fs.existsSync(ico)?ico:undefined;
 }
 ipcMain.handle("caseclosed:capabilities",()=>diagnostics.getCapabilities());
+ipcMain.handle("caseclosed:ai-status",()=>investigator.status());
+ipcMain.handle("caseclosed:ai-configure",(_event,key)=>investigator.configureApiKey(key));
+ipcMain.handle("caseclosed:ai-investigate",(_event,payload)=>investigator.investigate(payload));
 ipcMain.handle("caseclosed:scan",async(_event,options)=>{
   if(scanning)throw new Error("A diagnostic scan is already running.");
   scanning=true;
